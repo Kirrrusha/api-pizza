@@ -13,6 +13,7 @@ import {
 import { ProductService } from './product.service';
 import { Product } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('product')
 export class ProductController {
@@ -42,7 +43,7 @@ export class ProductController {
   @Patch('/:id')
   updateProduct(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateProductDto: CreateProductDto,
+    @Body() updateProductDto: UpdateProductDto,
   ): Promise<Product> {
     return this.productService.updatePost(id, updateProductDto);
   }

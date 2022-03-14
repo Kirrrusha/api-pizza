@@ -1,9 +1,10 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Option } from '../../option/option.entity';
+import { Product } from '../../product/product.entity';
+import { Option } from '../option.entity';
 
-export class CreateProductDto {
-  @IsNotEmpty()
+export class UpdateOptionDto {
+  @IsOptional()
   @ApiProperty()
   title: string;
 
@@ -11,13 +12,9 @@ export class CreateProductDto {
   @ApiProperty()
   image: string;
 
-  @IsNotEmpty()
-  @ApiProperty()
-  price: number;
-
   @IsOptional()
   @ApiProperty()
-  description: string;
+  products: Product[];
 
   @IsOptional()
   @ApiProperty()
