@@ -2,9 +2,7 @@ import {
   BaseEntity,
   Entity,
   PrimaryGeneratedColumn,
-  Column,
-  ManyToMany,
-  JoinTable,
+  Column
 } from 'typeorm';
 import { Product } from '../product/product.entity';
 
@@ -15,18 +13,4 @@ export class Category extends BaseEntity {
 
   @Column()
   title: string;
-
-  @ManyToMany(() => Product)
-  @JoinTable({
-    name: 'category_product',
-    joinColumn: {
-      name: 'category_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'product_id',
-      referencedColumnName: 'id',
-    },
-  })
-  products: Product[];
 }

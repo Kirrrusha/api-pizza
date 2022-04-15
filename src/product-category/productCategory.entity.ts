@@ -5,18 +5,11 @@ import {
     Entity,
     PrimaryColumn,
     JoinColumn,
-    OneToOne,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToMany,
-    JoinTable,
+    OneToOne
   } from 'typeorm';
 
   @Entity()
   export class ProductCategory extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
-
     @PrimaryColumn({ type: "int" })
     category_id: number;
 
