@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ProductCategoryService } from './product-category.service';
-
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProductCategoryRepository } from './product-category.repository';
 @Module({
-  providers: [ProductCategoryService]
+    imports: [TypeOrmModule.forFeature([ProductCategoryRepository])],
 })
 export class ProductCategoryModule {}
