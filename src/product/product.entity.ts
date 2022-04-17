@@ -1,42 +1,33 @@
+import { ProductToCategory } from 'src/product-to-category/product-to-category.entity';
+import { ProductToOption } from 'src/product-to-option/product-to-option.entity';
 import {
   BaseEntity,
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToMany,
-  JoinTable,
+  OneToMany
 } from 'typeorm';
-import { Option } from '../option/option.entity';
-import { Category } from '../category/category.entity';
 
-@Entity()
+@Entity('Product')
 export class Product extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  public id!: number;
 
   @Column()
-  title: string;
+  public title!: string;
 
   @Column()
-  image: string;
+  public image: string;
 
   @Column()
-  description: string;
+  public description!: string;
 
   @Column()
-  price: number;
+  public price!: number;
 
-  @ManyToMany(() => Option, (option) => option.id, { eager: false })
-  @JoinTable({
-    name: 'product_options',
-    joinColumn: {
-      name: 'product_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'option_id',
-      referencedColumnName: 'id',
-    },
-  })
-  options: Option[];
+  @OneToMany(() => ProductToCategory, productToCategory => productToCategory.product)
+  public productToCategory: ProductToCategory[];
+
+  @OneToMany(() => ProductToOption, productToOption => productToOption.product)
+  public productToOption: ProductToOption[];
 }

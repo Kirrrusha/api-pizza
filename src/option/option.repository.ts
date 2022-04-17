@@ -13,14 +13,14 @@ export class OptionRepository extends Repository<Option> {
   }
 
   async createOption(createProductDto: CreateProductDto): Promise<Product> {
-    const { title, description, price, options, image } = createProductDto;
+    const { title, description, price, image } = createProductDto;
 
     const product = new Product();
     product.title = title;
     product.description = description;
     product.price = price;
     if (image) product.image = image;
-    if (options) product.options = options;
+
     await product.save();
 
     return product;

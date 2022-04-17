@@ -1,15 +1,14 @@
-import { GroupOptions } from 'src/group-options/groupOptions.entity';
+import { OptionToGroupOptions } from 'src/option-to-group-options/option-to-group-options.entity';
+import { ProductToOption } from 'src/product-to-option/product-to-option.entity';
 import {
   BaseEntity,
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToMany,
-  JoinTable,
+  OneToMany
 } from 'typeorm';
-import { Product } from '../product/product.entity';
 
-@Entity()
+@Entity('Option')
 export class Option extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -20,31 +19,9 @@ export class Option extends BaseEntity {
   @Column()
   image: string;
 
-  @ManyToMany(() => Product, (product) => product.id)
-  @JoinTable({
-    name: 'product_options',
-    joinColumn: {
-      name: 'option_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'product_id',
-      referencedColumnName: 'id',
-    },
-  })
-  products: Product[];
+  @OneToMany(() => OptionToGroupOptions, optionsToGroupOptions => optionsToGroupOptions.option)
+  public optionToGroupOptions!: OptionToGroupOptions[];
 
-  @ManyToMany(() => GroupOptions, (group) => group.id)
-  @JoinTable({
-    name: 'groupOptions_options',
-    joinColumn: {
-      name: 'option_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'groupOptions_id',
-      referencedColumnName: 'id',
-    },
-  })
-  group: GroupOptions[];
+  @OneToMany(() => ProductToOption, productToOption => productToOption.option)
+  public productToOption!: ProductToOption[];
 }

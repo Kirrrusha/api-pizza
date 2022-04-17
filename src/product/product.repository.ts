@@ -14,14 +14,14 @@ export class ProductRepository extends Repository<Product> {
   }
 
   async createProduct(createProductDto: CreateProductDto): Promise<Product> {
-    const { title, description, price, options, image } = createProductDto;
+    const { title, description, price, image } = createProductDto;
 
     const product = new Product();
     product.title = title;
     product.description = description;
     product.price = price;
     if (image) product.image = image;
-    if (options) product.options = options;
+
     await product.save();
 
     return product;
@@ -51,13 +51,12 @@ export class ProductRepository extends Repository<Product> {
     id: number,
     updatePostDto: UpdateProductDto,
   ): Promise<Product> {
-    const { title, description, price, options, image } = updatePostDto;
+    const { title, description, price, image } = updatePostDto;
 
     const found = await this.findOne({ where: { id } });
     if (title) found.title = title;
     if (description) found.description = description;
     if (price) found.price = price;
-    if (options) found.options = options;
     if (image) found.image = image;
 
     await found.save();

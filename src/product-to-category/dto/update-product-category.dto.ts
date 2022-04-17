@@ -4,6 +4,9 @@ import { Product } from 'src/product/product.entity';
 
 export class UpdateProductCategoryDto {
   @IsOptional()
+  product_id: number;
+
+  @IsOptional()
   category_id: number;
 
   @IsOptional()

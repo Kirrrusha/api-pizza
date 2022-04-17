@@ -1,30 +1,26 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { CreateProductDto } from './dto/create-product.dto';
 import { NotFoundException } from '@nestjs/common';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { Category } from './category.entity';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @EntityRepository(Category)
 export class CategoryRepository extends Repository<Category> {
   async getProducts(): Promise<Category[]> {
-    const query = this.createQueryBuilder('Ca');
+    const query = this.createQueryBuilder('Category');
 
-    const products = await query.getMany();
-    return products;
+    const list = await query.getMany();
+    return list;
   }
 
-  async createCategory(createProductDto: CreateProductDto): Promise<Category> {
-    const { title, description, price, options, image } = createProductDto;
+  async createCategory(createProductDto: CreateCategoryDto): Promise<Category> {
+    const { title } = createProductDto;
 
     const category = new Category();
-    product.title = title;
-    product.description = description;
-    product.price = price;
-    if (image) product.image = image;
-    if (options) product.options = options;
-    await product.save();
+    category.title = title;
+    await category.save();
 
-    return product;
+    return category;
   }
 
   async deleteProduct(id: number): Promise<void> {
@@ -35,7 +31,7 @@ export class CategoryRepository extends Repository<Category> {
     }
   }
 
-  async getProductById(id: number): Promise<Product> {
+  async getPostById(id: number): Promise<Category> {
     try {
       const found = await this.findOne({ where: { id } });
 
@@ -47,18 +43,14 @@ export class CategoryRepository extends Repository<Category> {
     } catch (e) {}
   }
 
-  async updateProduct(
+  async updateCategory(
     id: number,
-    updatePostDto: UpdateProductDto,
-  ): Promise<Product> {
-    const { title, description, price, options, image } = updatePostDto;
+    updatePostDto: UpdateCategoryDto,
+  ): Promise<Category> {
+    const { title } = updatePostDto;
 
     const found = await this.findOne({ where: { id } });
     if (title) found.title = title;
-    if (description) found.description = description;
-    if (price) found.price = price;
-    if (options) found.options = options;
-    if (image) found.image = image;
 
     await found.save();
 
