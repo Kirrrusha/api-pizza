@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmConfig } from './config/typeorm.config';
-import { ProductModule } from './product/product.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ProductModule } from './modules/product/product.module';
 import { OptionModule } from './modules/option/option.module';
-import { CategoryModule } from './category/category.module';
-import { GroupOptionsModule } from './group-options/group-options.module';
+import { CategoryModule } from './modules/category/category.module';
+import { GroupOptionsModule } from './modules/group-options/group-options.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(typeOrmConfig),
+    MongooseModule.forRoot(process.env.MONGODB_CONNECTION, {
+      useNewUrlParser: true,
+    }),
     ProductModule,
     OptionModule,
     CategoryModule,

@@ -1,43 +1,62 @@
-import { Product } from './product.entity';
-import { EntityRepository, Repository } from 'typeorm';
-import { CreateProductDto } from './dto/create-product.dto';
+import { lineDelimiter } from './../../helpers/index';
+import { Model } from 'mongoose';
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+
+import { SaveProductDto } from './dto/save-product.dto';
 import { NotFoundException } from '@nestjs/common';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Product } from './schemas/products.schema';
 
-@EntityRepository(Product)
-export class ProductRepository extends Repository<Product> {
-  async getProducts(): Promise<Product[]> {
-    const query = this.createQueryBuilder('Product');
+@Injectable()
+export class ProductRepository {
+  constructor(
+    @InjectModel(Product.name)
+    private readonly productDBProvider: Model<Product>,
+  ) {}
 
-    const products = await query.getMany();
+  async getAll(): Promise<Product[]> {
+    const products = await this.productDBProvider.find().exec();
     return products;
   }
 
-  async createProduct(createProductDto: CreateProductDto): Promise<Product> {
-    const { title, description, price, image } = createProductDto;
+  async save(createProductDto: SaveProductDto): Promise<Product> {
+    const { title, description, price, image, id } = createProductDto;
+    const prefix = `[Product name: ${title}][Mongo ID: ${id}]`;
 
-    const product = new Product();
-    product.title = title;
-    product.description = description;
-    product.price = price;
-    if (image) product.image = image;
+    Logger.log(`${prefix} SAVING`);
 
-    await product.save();
+    try {
+      const res = await this.productDBProvider
+        .updateOne(
+          {
+            $or: [{ title }, { _id: id }],
+          },
+          { title, description, price, image },
+          {
+            upsert: true,
+          },
+        )
+        .lean()
+        .exec();
 
-    return product;
-  }
+      Logger.log(`${prefix} SUCCESS`);
+      lineDelimiter();
 
-  async deleteProduct(id: number): Promise<void> {
-    const result = await this.delete({ id });
-
-    if (result.affected === 0) {
-      throw new NotFoundException(`Task with ID "${id}" not found`);
+      return res as unknown as Product;
+    } catch (e) {
+      Logger.error(`${prefix} Save error: ` + e.message);
+      lineDelimiter();
     }
   }
 
-  async getProductById(id: number): Promise<Product> {
+  async remove(id: string): Promise<void> {
+    await this.productDBProvider.findByIdAndDelete(id);
+  }
+
+  async getOne(id: string): Promise<Product> {
     try {
-      const found = await this.findOne({ where: { id } });
+      const found = await this.productDBProvider.findById(id);
 
       if (!found) {
         throw new NotFoundException(`Task with ID "${id}" not found`);
@@ -45,22 +64,5 @@ export class ProductRepository extends Repository<Product> {
 
       return found;
     } catch (e) {}
-  }
-
-  async updateProduct(
-    id: number,
-    updatePostDto: UpdateProductDto,
-  ): Promise<Product> {
-    const { title, description, price, image } = updatePostDto;
-
-    const found = await this.findOne({ where: { id } });
-    if (title) found.title = title;
-    if (description) found.description = description;
-    if (price) found.price = price;
-    if (image) found.image = image;
-
-    await found.save();
-
-    return found;
   }
 }

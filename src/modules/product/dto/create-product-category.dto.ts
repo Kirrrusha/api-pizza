@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateProductDto } from './create-product.dto';
+import { SaveProductDto } from './save-product.dto';
 
-export class CreateProductCategoryDto extends CreateProductDto {
+export class CreateProductCategoryDto extends SaveProductDto {
   @IsOptional()
   @ApiProperty()
   category_id?: number;

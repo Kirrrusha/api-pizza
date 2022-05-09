@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
 import { OptionService } from './option.service';
+import { Option, OptionSchema } from './schemas/option.schema';
 import { OptionController } from './option.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { OptionRepository } from './option.repository';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([OptionRepository])],
-  providers: [OptionService],
-  controllers: [OptionController]
+  imports: [
+    MongooseModule.forFeature([{ name: Option.name, schema: OptionSchema }]),
+  ],
+  providers: [OptionService, OptionRepository],
+  controllers: [OptionController],
 })
 export class OptionModule {}

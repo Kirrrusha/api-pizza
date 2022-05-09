@@ -5,48 +5,36 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { Product } from './product.entity';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateProductCategoryDto } from './dto/create-product-category.dto';
+import { Product } from './schemas/products.schema';
 
 @Controller('product')
 export class ProductController {
-  constructor(private productService = new ProductService()) {}
+  constructor(private productService: ProductService) {}
 
   @Get()
-  getProducts(): Promise<Product[]> {
-    return this.productService.getProducts();
+  getAll(): Promise<Product[]> {
+    return this.productService.getAll();
   }
 
   @Post()
   @UsePipes(ValidationPipe)
-  createProduct(
-    @Body() createProductDTO: CreateProductCategoryDto,
-  ): Promise<Product> {
-    return this.productService.createProduct(createProductDTO);
+  save(@Body() createProductDTO: CreateProductCategoryDto): Promise<Product> {
+    return this.productService.save(createProductDTO);
   }
 
   @Delete('/:id')
-  deleteProduct(@Param('id', ParseIntPipe) id: number): Promise<number> {
-    return this.productService.deleteProduct(id);
+  remove(@Param('id', ParseIntPipe) id: string): Promise<string> {
+    return this.productService.remove(id);
   }
 
   @Get('/:id')
-  getProductById(@Param('id', ParseIntPipe) id: number): Promise<Product> {
-    return this.productService.getProductById(id);
-  }
-
-  @Patch('/:id')
-  updateProduct(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateProductDto: UpdateProductDto,
-  ): Promise<Product> {
-    return this.productService.updatePost(id, updateProductDto);
+  getOne(@Param('id', ParseIntPipe) id: string): Promise<Product> {
+    return this.productService.getOne(id);
   }
 }

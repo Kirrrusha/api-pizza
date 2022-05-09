@@ -1,6 +1,7 @@
+import { Product, ProductSchema } from './schemas/products.schema';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
 import { ProductRepository } from './product.repository';
 
 // jest.setTimeout(30000);
@@ -11,21 +12,19 @@ describe('Test products repository', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRootAsync({
-          useFactory: () => ({
-            type: 'postgres',
-            host: 'localhost',
-            port: 5432,
-            username: 'postgres',
-            password: 'postgres_password',
-            database: 'postgres',
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
-        }),
-        TypeOrmModule.forFeature([ProductRepository]),
+        MongooseModule.forRoot(
+          'mongodb://localhost:27017/Products?authSource=admin',
+          {
+            useNewUrlParser: true,
+            user: 'root',
+            pass: 'root',
+          },
+        ),
+        MongooseModule.forFeature([
+          { name: Product.name, schema: ProductSchema },
+        ]),
       ],
-      providers: [],
+      providers: [ProductRepository],
     }).compile();
 
     app = module.createNestApplication();
@@ -35,14 +34,11 @@ describe('Test products repository', () => {
     await app.init();
   });
 
-  beforeEach(async () => {
-    await repo.delete({});
-  });
-  afterAll(async () => {
-    await app.close();
-  });
+  //   afterAll(async () => {
+  //     await app.close();
+  //   });
 
-  it('should be defined', async () => {
+  it('should be defined', () => {
     expect(app).toBeDefined();
     expect(repo).toBeDefined();
   });
