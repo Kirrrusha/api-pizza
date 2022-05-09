@@ -1,10 +1,6 @@
-import { OptionRepository } from './../option/option.repository';
-import { ProductToCategoryRepository } from './../product-to-category/product-to-category.repository';
-import { ProductToOptionRepository } from './../product-to-option/product-to-option.repository';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Product } from './product.entity';
 import { ProductRepository } from './product.repository';
 
 // jest.setTimeout(30000);
