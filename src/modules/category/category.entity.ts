@@ -3,9 +3,9 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToMany
+  OneToMany,
 } from 'typeorm';
-import { ProductToCategory } from 'src/product-to-category/product-to-category.entity';
+import { ProductToCategory } from '../product-to-category/product-to-category.entity';
 @Entity('Category')
 export class Category extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -14,6 +14,9 @@ export class Category extends BaseEntity {
   @Column()
   title: string;
 
-  @OneToMany(() => ProductToCategory, productToCategory => productToCategory.category)
+  @OneToMany(
+    () => ProductToCategory,
+    (productToCategory) => productToCategory.category,
+  )
   public productToCategory!: ProductToCategory[];
 }

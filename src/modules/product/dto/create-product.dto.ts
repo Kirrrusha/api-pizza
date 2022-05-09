@@ -7,7 +7,7 @@ export class CreateProductDto {
 
   @IsOptional()
   @ApiProperty()
-  image: string;
+  image?: string;
 
   @IsNotEmpty()
   @ApiProperty()
@@ -15,5 +15,5 @@ export class CreateProductDto {
 
   @IsOptional()
   @ApiProperty()
-  description: string;
+  description?: string;
 }

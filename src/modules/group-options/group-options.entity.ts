@@ -1,4 +1,4 @@
-import { OptionToGroupOptions } from 'src/option-to-group-options/option-to-group-options.entity';
+import { OptionToGroupOptions } from '../option-to-group-options/option-to-group-options.entity';
 import {
   BaseEntity,
   Entity,
@@ -15,6 +15,9 @@ export class GroupOptions extends BaseEntity {
   @Column()
   title: string;
 
-  @OneToMany(() => OptionToGroupOptions, optionsToGroupOptions => optionsToGroupOptions.groupOptions)
+  @OneToMany(
+    () => OptionToGroupOptions,
+    (optionsToGroupOptions) => optionsToGroupOptions.groupOptions,
+  )
   public optionToGroupOptions!: OptionToGroupOptions[];
 }

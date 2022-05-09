@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 import { GroupOptions } from 'src/group-options/group-options.entity';
-import { Option } from 'src/option/option.entity';
+import { Option } from '../../option/option.entity';
 
 export class CreateOptionsGroupOptionsDto {
   @IsNotEmpty()

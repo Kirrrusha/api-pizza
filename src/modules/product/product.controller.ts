@@ -12,8 +12,8 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product } from './product.entity';
-import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { CreateProductCategoryDto } from './dto/create-product-category.dto';
 
 @Controller('product')
 export class ProductController {
@@ -26,12 +26,14 @@ export class ProductController {
 
   @Post()
   @UsePipes(ValidationPipe)
-  createProduct(@Body() createProductDTO: CreateProductDto): Promise<Product> {
+  createProduct(
+    @Body() createProductDTO: CreateProductCategoryDto,
+  ): Promise<Product> {
     return this.productService.createProduct(createProductDTO);
   }
 
   @Delete('/:id')
-  deleteProduct(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  deleteProduct(@Param('id', ParseIntPipe) id: number): Promise<number> {
     return this.productService.deleteProduct(id);
   }
 
