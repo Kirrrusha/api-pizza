@@ -20,8 +20,8 @@ export class ProductRepository {
     return products;
   }
 
-  async save(createProductDto: SaveProductDto): Promise<Product> {
-    const { title, description, price, image, id } = createProductDto;
+  async save(saveProductDto: SaveProductDto): Promise<Product> {
+    const { title, description, price, image, id } = saveProductDto;
     const prefix = `[Product name: ${title}][Mongo ID: ${id}]`;
 
     Logger.log(`${prefix} SAVING`);
@@ -54,12 +54,12 @@ export class ProductRepository {
     await this.productDBProvider.findByIdAndDelete(id);
   }
 
-  async getOne(id: string): Promise<Product> {
+  async getOne(title: string): Promise<Product> {
     try {
-      const found = await this.productDBProvider.findById(id);
+      const found = await this.productDBProvider.findOne({ title }).exec();
 
       if (!found) {
-        throw new NotFoundException(`Task with ID "${id}" not found`);
+        throw new NotFoundException(`Task with TITLE "${title}" not found`);
       }
 
       return found;

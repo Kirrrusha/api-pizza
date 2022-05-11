@@ -10,7 +10,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class SaveProductDto {
   @IsOptional()
   @ApiProperty()
-  id: string;
+  id?: string;
 
   @IsString()
   @MaxLength(30)

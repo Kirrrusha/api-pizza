@@ -15,6 +15,9 @@ export class Product {
   image: string;
 
   @Prop()
+  price: number;
+
+  @Prop()
   description: string;
 
   //   @Prop()
