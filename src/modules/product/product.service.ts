@@ -9,10 +9,7 @@ import { Product } from './schemas/products.schema';
 
 @Injectable()
 export class ProductService {
-  constructor(
-    private productRepo: ProductRepository, // private productToCategoryRepository: ProductToCategoryRepository,
-  ) // private categoryRepository: CategoryRepository,
-  {}
+  constructor(private productRepo: ProductRepository) {}
 
   async getAll(): Promise<Product[]> {
     return this.productRepo.getAll();

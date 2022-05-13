@@ -1,52 +1,35 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProductToCategoryRepository } from '../product-to-category/product-to-category.repository';
-import { CategoryRepository } from '../category/category.repository';
 import { productRepositoryMock } from './mocks/ProductRepositoryMock';
 import { ProductRepository } from './product.repository';
 import { ProductService } from './product.service';
-import { CategoryRepositoryMock } from '../category/mocks/CategoryRepositoryMock';
-import { productToCategoryRepositoryMock } from '../product-to-category/mocks/ProductToCategoryRepositoryMock';
 
 describe('ProductService', () => {
   let service;
   let poductRepo;
-  let categoryRepo;
-  let productToCategoryRepo;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProductService,
         { provide: ProductRepository, useFactory: productRepositoryMock },
-        { provide: CategoryRepository, useClass: CategoryRepositoryMock },
-        {
-          provide: ProductToCategoryRepository,
-          useFactory: productToCategoryRepositoryMock,
-        },
       ],
     }).compile();
 
     service = module.get<ProductService>(ProductService);
     poductRepo = module.get<ProductRepository>(ProductRepository);
-    categoryRepo = module.get<CategoryRepository>(CategoryRepository);
-    productToCategoryRepo = module.get<ProductToCategoryRepository>(
-      ProductToCategoryRepository,
-    );
   });
 
   it('should be defined', () => {
-    expect.assertions(4);
+    expect.assertions(2);
 
     expect(service).toBeDefined();
     expect(poductRepo).toBeDefined();
-    expect(categoryRepo).toBeDefined();
-    expect(productToCategoryRepo).toBeDefined();
   });
 
-  it('createProduct without category_id', async () => {
+  it('save', async () => {
     expect.assertions(2);
 
-    poductRepo.createProduct.mockResolvedValue({
+    poductRepo.save.mockResolvedValue({
       id: 1,
       title: 'title1',
       image: 'image1',
@@ -54,14 +37,14 @@ describe('ProductService', () => {
       price: 100,
     });
 
-    const result = await service.createProduct({
+    const result = await service.save({
       title: 'title1',
       image: 'image1',
       description: 'description1',
       price: 100,
     });
 
-    expect(poductRepo.createProduct).toHaveBeenCalled();
+    expect(poductRepo.save).toHaveBeenCalled();
 
     expect(result).toEqual({
       id: 1,
@@ -72,41 +55,96 @@ describe('ProductService', () => {
     });
   });
 
-  it('createProduct with category_id', async () => {
+  it('getAll', async () => {
     expect.assertions(2);
 
-    poductRepo.createProduct.mockResolvedValue({
-      id: 1,
+    poductRepo.getAll.mockResolvedValue([
+      {
+        id: 1,
+        title: 'title1',
+        image: 'image1',
+        description: 'description1',
+        price: 100,
+      },
+      {
+        id: 2,
+        title: 'title2',
+        image: 'image2',
+        description: 'description2',
+        price: 200,
+      },
+    ]);
+
+    const result = await service.getAll();
+
+    expect(poductRepo.getAll).toHaveBeenCalled();
+
+    expect(result.length).toEqual(2);
+  });
+
+  it('remove', async () => {
+    expect.assertions(2);
+
+    poductRepo.remove.mockResolvedValue('123');
+
+    const result = await service.remove('123');
+
+    expect(poductRepo.remove).toHaveBeenCalledWith('123');
+
+    expect(result).toEqual('123');
+  });
+
+  it('getOne', async () => {
+    expect.assertions(2);
+
+    poductRepo.getOne.mockResolvedValue({
+      id: '123',
       title: 'title1',
       image: 'image1',
       description: 'description1',
       price: 100,
     });
 
-    productToCategoryRepo.createProduct.mockResolvedValue({
-      id: 1,
-      title: 'title1',
-      image: 'image1',
-      description: 'description1',
-      price: 100,
-    });
+    const result = await service.getOne('123');
 
-    const result = await service.createProduct({
-      title: 'title1',
-      image: 'image1',
-      description: 'description1',
-      price: 100,
-      category_id: 1,
-    });
-
-    expect(poductRepo.createProduct).toHaveBeenCalled();
+    expect(poductRepo.getOne).toHaveBeenCalledWith('123');
 
     expect(result).toEqual({
-      id: 1,
+      id: '123',
       title: 'title1',
       image: 'image1',
       description: 'description1',
       price: 100,
     });
   });
+
+  //   it('createProduct with category_id', async () => {
+  //     expect.assertions(2);
+
+  //     poductRepo.createProduct.mockResolvedValue({
+  //       id: 1,
+  //       title: 'title1',
+  //       image: 'image1',
+  //       description: 'description1',
+  //       price: 100,
+  //     });
+
+  //     const result = await service.save({
+  //       title: 'title1',
+  //       image: 'image1',
+  //       description: 'description1',
+  //       price: 100,
+  //       //   category_id: 1,
+  //     });
+
+  //     expect(poductRepo.createProduct).toHaveBeenCalled();
+
+  //     expect(result).toEqual({
+  //       id: 1,
+  //       title: 'title1',
+  //       image: 'image1',
+  //       description: 'description1',
+  //       price: 100,
+  //     });
+  //   });
 });

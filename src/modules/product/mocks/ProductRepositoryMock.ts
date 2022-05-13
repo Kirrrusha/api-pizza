@@ -1,5 +1,6 @@
 export const productRepositoryMock = () => ({
-  createProduct: jest.fn(),
+  getAll: jest.fn(),
+  save: jest.fn(),
   //   (() => ({
   //     id: 1,
   //     title: 'title1',
@@ -7,6 +8,6 @@ export const productRepositoryMock = () => ({
   //     description: 'description1',
   //     price: 100,
   //   }));
-  deleteProduct: jest.fn(),
-  updateProduct: jest.fn(),
+  remove: jest.fn(),
+  getOne: jest.fn(),
 });
