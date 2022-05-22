@@ -3,11 +3,14 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export type ProductDocument = mongoose.Document<Product>;
 
-@Schema({ collection: 'Product', versionKey: false })
+@Schema({
+  collection: 'Product',
+  versionKey: false,
+  timestamps: true,
+  autoIndex: true,
+  autoCreate: true,
+})
 export class Product {
-  @Prop({ required: true, immutable: true, timestamps: true })
-  id: number;
-
   @Prop({ required: true })
   title: string;
 
@@ -20,24 +23,16 @@ export class Product {
   @Prop()
   description: string;
 
-  //   @Prop()
-  //   categories: [
-  //     {
-  //       type: mongoose.Schema.Types.ObjectId;
-  //       ref: 'Category';
-  //     },
-  //   ];
-
-  //   @Prop()
-  //   options: [
-  //     {
-  //       type: mongoose.Schema.Types.ObjectId;
-  //       ref: 'Option';
-  //     },
-  //   ];
+  //   categories?: string[];
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
+
+ProductSchema.virtual('categories', {
+  ref: 'ProductToCategory',
+  localField: '_id',
+  foreignField: 'categoryId',
+});
 
 ProductSchema.set('toObject', { virtuals: true });
 ProductSchema.set('toJSON', { virtuals: true });

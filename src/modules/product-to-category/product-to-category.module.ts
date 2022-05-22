@@ -1,7 +1,18 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProductToCategoryRepository } from './product-to-category.repository';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ProductToCategoryRepository } from './repo/product-to-category.repository';
+
+import {
+  ProductToCategory,
+  ProductToCategorySchema,
+} from './schemas/product-to-category.schema';
+
 @Module({
-    imports: [TypeOrmModule.forFeature([ProductToCategoryRepository])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: ProductToCategory.name, schema: ProductToCategorySchema },
+    ]),
+  ],
+  providers: [ProductToCategoryRepository],
 })
 export class ProductToCategoryModule {}

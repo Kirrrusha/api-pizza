@@ -9,9 +9,9 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { CreateProductCategoryDto } from './dto/create-product-category.dto';
-import { Product } from './schemas/products.schema';
+import { ProductService } from '../services/product.service';
+import { CreateProductCategoryDto } from '../dto/create-product-category.dto';
+import { Product } from '../schemas/products.schema';
 
 @Controller('product')
 export class ProductController {
@@ -24,7 +24,7 @@ export class ProductController {
 
   @Post()
   @UsePipes(ValidationPipe)
-  save(@Body() createProductDTO: CreateProductCategoryDto): Promise<Product> {
+  save(@Body() createProductDTO: CreateProductCategoryDto): Promise<void> {
     return this.productService.save(createProductDTO);
   }
 

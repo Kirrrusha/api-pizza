@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ProductRepository } from './product.repository';
-import { ProductToCategoryRepository } from '../product-to-category/product-to-category.repository';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { CreateProductCategoryDto } from './dto/create-product-category.dto';
-import { CategoryRepository } from '../category/category.repository';
-import { SaveProductDto } from './dto/save-product.dto';
-import { Product } from './schemas/products.schema';
+import { ProductRepository } from '../repo/product.repository';
+import { ProductToCategoryRepository } from '../../product-to-category/repo/product-to-category.repository';
+import { UpdateProductDto } from '../dto/update-product.dto';
+import { CreateProductCategoryDto } from '../dto/create-product-category.dto';
+import { CategoryRepository } from '../../category/category.repository';
+import { SaveProductDto } from '../dto/save-product.dto';
+import { Product } from '../schemas/products.schema';
 
 @Injectable()
 export class ProductService {
@@ -15,7 +15,7 @@ export class ProductService {
     return this.productRepo.getAll();
   }
 
-  async save(product: SaveProductDto): Promise<Product> {
+  async save(product: SaveProductDto): Promise<void> {
     const productData = await this.productRepo.save(product);
 
     // if (category_id) {

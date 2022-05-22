@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { productRepositoryMock } from './mocks/ProductRepositoryMock';
-import { ProductRepository } from './product.repository';
-import { ProductService } from './product.service';
+import { productRepositoryMock } from '../mocks/ProductRepositoryMock';
+import { ProductRepository } from '../repo/product.repository';
+import { ProductService } from '../services/product.service';
 
 describe('ProductService', () => {
   let service;

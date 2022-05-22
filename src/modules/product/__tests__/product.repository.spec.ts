@@ -1,9 +1,14 @@
-import { Product, ProductSchema } from './schemas/products.schema';
+import { Product, ProductSchema } from '../schemas/products.schema';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ProductRepository } from './product.repository';
-import product from './mocks/product';
+
+import { ProductRepository } from '../repo/product.repository';
+import product from '../mocks/product';
+import {
+  ProductToCategory,
+  ProductToCategorySchema,
+} from '../../product-to-category/schemas/product-to-category.schema';
 
 describe('Test products repository', () => {
   let app: INestApplication;
@@ -13,22 +18,24 @@ describe('Test products repository', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(
-          'mongodb://localhost:27017/Products?authSource=admin',
+          'mongodb://localhost:27017/Pizza?authSource=admin',
           {
             useNewUrlParser: true,
             user: 'root',
             pass: 'root',
+            autoIndex: true,
+            autoCreate: true,
           },
         ),
         MongooseModule.forFeature([
           { name: Product.name, schema: ProductSchema },
+          { name: ProductToCategory.name, schema: ProductToCategorySchema },
         ]),
       ],
       providers: [ProductRepository],
     }).compile();
 
     app = module.createNestApplication();
-
     repo = module.get<ProductRepository>(ProductRepository);
 
     await app.init();
@@ -55,10 +62,10 @@ describe('Test products repository', () => {
     expect.assertions(2);
     const { title, description, price, image } = product;
     await repo.save({ title, description, price, image });
-    const result = await repo.getOne('123');
-    expect(result).toEqual(undefined);
+    const result = await repo.getOneByTitle('123');
+    expect(result).toBeFalsy();
 
-    const secondResult = await repo.getOne(title);
+    const secondResult = await repo.getOneByTitle(title);
 
     expect(secondResult).toEqual(
       expect.objectContaining({
