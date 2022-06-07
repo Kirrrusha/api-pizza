@@ -7,6 +7,8 @@ import {
   MaxLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { Types } from 'mongoose';
 export class SaveProductDto {
   @IsOptional()
   @ApiProperty()
@@ -33,4 +35,8 @@ export class SaveProductDto {
   @MaxLength(300)
   @ApiProperty()
   description?: string;
+
+  @IsOptional()
+  @Type(() => Types.ObjectId)
+  categoryIds?: Types.ObjectId[];
 }

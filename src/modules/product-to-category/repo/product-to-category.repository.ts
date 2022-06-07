@@ -16,9 +16,9 @@ export class ProductToCategoryRepository {
   private readonly logger = new Logger(ProductToCategory.name);
 
   async save(
-    saveProducCategorytDto: SaveProductCategoryDto,
+    saveProductCategoryDto: SaveProductCategoryDto,
   ): Promise<ProductToCategory> {
-    const { productId, categoryId } = saveProducCategorytDto;
+    const { productId, categoryId } = saveProductCategoryDto;
     const prefix = `[Product ID: ${productId}][Category ID: ${categoryId}]`;
 
     try {
@@ -32,6 +32,50 @@ export class ProductToCategoryRepository {
         )
         .lean()
         .exec();
+
+      this.logger.log(`${prefix} SAVING SUCCESS`);
+      lineDelimiter();
+
+      return result;
+    } catch (e) {
+      this.logger.error(`${prefix} Save error: ${e.message}`);
+      lineDelimiter();
+    }
+  }
+
+  async getAllById(
+    id: Types.ObjectId,
+    type: 'categoryId' | 'productId',
+  ): Promise<ProductToCategory[]> {
+    const prefix = `[${type}: ${id}]`;
+    try {
+      this.logger.log(`${prefix} GET ALL BY ID START`);
+      const result = await this.productToCategoryDBProvider
+        .find({ [type]: id })
+        .lean()
+        .exec();
+
+      this.logger.log(`${prefix} GET ALL BY ID SUCCESS`);
+      lineDelimiter();
+
+      return result;
+    } catch (e) {
+      this.logger.error(`${prefix} GET ALL BY ID ERROR: ${e.message}`);
+      lineDelimiter();
+    }
+  }
+
+  async saveMany(payload: ProductToCategory[]): Promise<ProductToCategory[]> {
+    const prefix = payload.reduce(
+      (acc, item) =>
+        `${acc} [Product IDs: ${item.productId}][Category ID: ${item.categoryId}]`,
+      '',
+    );
+
+    try {
+      this.logger.log(`${prefix} SAVING START`);
+
+      const result = await this.productToCategoryDBProvider.insertMany(payload);
 
       this.logger.log(`${prefix} SAVING SUCCESS`);
       lineDelimiter();
@@ -57,8 +101,8 @@ export class ProductToCategoryRepository {
     }
   }
 
-  async remove(saveProducCategorytDto: SaveProductCategoryDto): Promise<void> {
-    const { productId, categoryId } = saveProducCategorytDto;
+  async remove(saveProductCategoryDto: SaveProductCategoryDto): Promise<void> {
+    const { productId, categoryId } = saveProductCategoryDto;
     const prefix = `${productId ? `[PRODUCT ID: ${productId}]` : ''} ${
       categoryId ? `[CATEGORY ID: ${categoryId}]` : ''
     }`;

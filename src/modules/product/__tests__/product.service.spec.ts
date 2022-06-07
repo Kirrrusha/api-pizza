@@ -1,7 +1,9 @@
+import { ProductToCategoryRepository } from './../../product-to-category/repo/product-to-category.repository';
 import { Test, TestingModule } from '@nestjs/testing';
 import { productRepositoryMock } from '../mocks/ProductRepositoryMock';
 import { ProductRepository } from '../repo/product.repository';
 import { ProductService } from '../services/product.service';
+import { Types } from 'mongoose';
 
 describe('ProductService', () => {
   let service;
@@ -12,6 +14,10 @@ describe('ProductService', () => {
       providers: [
         ProductService,
         { provide: ProductRepository, useFactory: productRepositoryMock },
+        {
+          provide: ProductToCategoryRepository,
+          useFactory: productRepositoryMock,
+        },
       ],
     }).compile();
 
@@ -26,7 +32,7 @@ describe('ProductService', () => {
     expect(poductRepo).toBeDefined();
   });
 
-  it('save', async () => {
+  it('save without categoryIds', async () => {
     expect.assertions(2);
 
     poductRepo.save.mockResolvedValue({
@@ -52,6 +58,38 @@ describe('ProductService', () => {
       image: 'image1',
       description: 'description1',
       price: 100,
+    });
+  });
+
+  it('save with categoryIds', async () => {
+    expect.assertions(2);
+    const categoryId = new Types.ObjectId();
+    poductRepo.save.mockResolvedValue({
+      id: 1,
+      title: 'title1',
+      image: 'image1',
+      description: 'description1',
+      price: 100,
+      categoryIds: [categoryId],
+    });
+
+    const result = await service.save({
+      title: 'title1',
+      image: 'image1',
+      description: 'description1',
+      price: 100,
+      categoryIds: [categoryId],
+    });
+
+    expect(poductRepo.save).toHaveBeenCalled();
+
+    expect(result).toEqual({
+      id: 1,
+      title: 'title1',
+      image: 'image1',
+      description: 'description1',
+      price: 100,
+      categoryIds: [categoryId],
     });
   });
 
@@ -97,7 +135,7 @@ describe('ProductService', () => {
   it('getOne', async () => {
     expect.assertions(2);
 
-    poductRepo.getOne.mockResolvedValue({
+    poductRepo.getOneByTitle.mockResolvedValue({
       id: '123',
       title: 'title1',
       image: 'image1',
@@ -107,7 +145,7 @@ describe('ProductService', () => {
 
     const result = await service.getOne('123');
 
-    expect(poductRepo.getOne).toHaveBeenCalledWith('123');
+    expect(poductRepo.getOneByTitle).toHaveBeenCalledWith('123');
 
     expect(result).toEqual({
       id: '123',

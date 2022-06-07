@@ -22,8 +22,6 @@ export class Product {
 
   @Prop()
   description: string;
-
-  //   categories?: string[];
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

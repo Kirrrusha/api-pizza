@@ -5,9 +5,6 @@ export type CategoryDocument = mongoose.Document<Category>;
 
 @Schema({ collection: 'Category', versionKey: false })
 export class Category {
-  @Prop({ required: true, timestamps: true })
-  id: number;
-
   @Prop({ required: true })
   title: string;
 }
@@ -15,9 +12,9 @@ export class Category {
 export const CategorySchema = SchemaFactory.createForClass(Category);
 
 CategorySchema.virtual('products', {
-  ref: 'ProductToCategory',
+  ref: 'Product',
   localField: '_id',
-  foreignField: 'categoryId',
+  foreignField: '_id',
 });
 
 CategorySchema.set('toObject', { virtuals: true });

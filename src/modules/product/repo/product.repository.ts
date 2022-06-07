@@ -19,7 +19,10 @@ export class ProductRepository {
   async getAll(): Promise<Product[]> {
     try {
       this.logger.log('GET_ALL PENDEING');
-      const products = await this.productDBProvider.find().exec();
+      const products = await this.productDBProvider
+        .find()
+        .populate('categories')
+        .exec();
       this.logger.log('GET_ALL SUCCESS');
       lineDelimiter();
 
@@ -30,30 +33,35 @@ export class ProductRepository {
     }
   }
 
-  async save(saveProductDto: SaveProductDto): Promise<void> {
+  async save(saveProductDto: SaveProductDto): Promise<Product> {
     const { title, description, price, image, id } = saveProductDto;
     const prefix = `[Product name: ${title}][Mongo ID: ${id}]`;
 
     Logger.log(`${prefix} SAVING`);
 
     try {
-      await this.productDBProvider.updateOne(
-        {
-          $or: [{ title }, { _id: id }],
-        },
-        {
-          title,
-          description,
-          price,
-          image,
-        },
-        {
-          upsert: true,
-        },
-      );
+      const result = await this.productDBProvider
+        .findOneAndUpdate(
+          {
+            $or: [{ title }, { _id: id }],
+          },
+          {
+            title,
+            description,
+            price,
+            image,
+          },
+          {
+            upsert: true,
+          },
+        )
+        .lean()
+        .exec();
 
       Logger.log(`${prefix} SUCCESS`);
       lineDelimiter();
+
+      return result;
     } catch (e) {
       Logger.error(`${prefix} SAVE ERROR: ${e.message}`);
       lineDelimiter();

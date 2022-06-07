@@ -71,6 +71,95 @@ describe('Test product-to-category repository', () => {
     );
   });
 
+  it('should be save many and update item return result', async () => {
+    expect.assertions(3);
+    const productId1 = new Types.ObjectId();
+    const categoryId1 = new Types.ObjectId();
+
+    await repo.save({ productId: productId1, categoryId: categoryId1 });
+
+    const productId2 = new Types.ObjectId();
+    const categoryId2 = new Types.ObjectId();
+
+    const payload = [
+      { productId: productId1, categoryId: categoryId2 },
+      { productId: productId2, categoryId: categoryId2 },
+    ];
+    const result = await repo.saveMany(payload);
+
+    result.forEach((item, index) => {
+      expect(item).toEqual(expect.objectContaining(payload[index]));
+    });
+
+    expect(result.length).toEqual(payload.length);
+  });
+
+  it('should return all by productId', async () => {
+    const productId1 = new Types.ObjectId();
+    const productId2 = new Types.ObjectId();
+    const categoryId1 = new Types.ObjectId();
+    const categoryId2 = new Types.ObjectId();
+    const categoryId3 = new Types.ObjectId();
+
+    const payload = [
+      { productId: productId1, categoryId: categoryId1 },
+      { productId: productId1, categoryId: categoryId2 },
+      { productId: productId1, categoryId: categoryId3 },
+      { productId: productId2, categoryId: categoryId3 },
+    ];
+
+    await repo.saveMany(payload);
+    const result = await repo.getAllById(productId1, 'productId');
+
+    result.forEach((item) => {
+      expect(item).toEqual(expect.objectContaining({ productId: productId1 }));
+    });
+
+    expect(result.length).toEqual(3);
+  });
+  it('should return all by categoryId', async () => {
+    const categoryId1 = new Types.ObjectId();
+    const categoryId2 = new Types.ObjectId();
+    const productId1 = new Types.ObjectId();
+    const productId2 = new Types.ObjectId();
+    const productId3 = new Types.ObjectId();
+
+    const payload = [
+      { productId: productId1, categoryId: categoryId1 },
+      { productId: productId1, categoryId: categoryId2 },
+      { productId: productId2, categoryId: categoryId2 },
+      { productId: productId3, categoryId: categoryId2 },
+    ];
+
+    await repo.saveMany(payload);
+    const result = await repo.getAllById(categoryId2, 'categoryId');
+
+    result.forEach((item) => {
+      expect(item).toEqual(
+        expect.objectContaining({ categoryId: categoryId2 }),
+      );
+    });
+
+    expect(result.length).toEqual(3);
+  });
+
+  it('should be save many return result', async () => {
+    const productId1 = new Types.ObjectId();
+    const categoryId1 = new Types.ObjectId();
+
+    const productId2 = new Types.ObjectId();
+    const categoryId2 = new Types.ObjectId();
+
+    const payload = [
+      { productId: productId1, categoryId: categoryId1 },
+      { productId: productId2, categoryId: categoryId2 },
+    ];
+    const result = await repo.saveMany(payload);
+    result.forEach((item, index) => {
+      expect(item).toEqual(expect.objectContaining(payload[index]));
+    });
+  });
+
   it('should remove record by mongoId', async () => {
     const productId = new Types.ObjectId();
     const categoryId = new Types.ObjectId();

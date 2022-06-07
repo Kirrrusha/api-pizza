@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { Types } from 'mongoose';
+
 import { ProductRepository } from '../repo/product.repository';
 import { ProductToCategoryRepository } from '../../product-to-category/repo/product-to-category.repository';
 import { UpdateProductDto } from '../dto/update-product.dto';
@@ -9,43 +11,30 @@ import { Product } from '../schemas/products.schema';
 
 @Injectable()
 export class ProductService {
-  constructor(private productRepo: ProductRepository) {}
+  constructor(
+    private productRepo: ProductRepository,
+    private productToCategoryRepository: ProductToCategoryRepository,
+  ) {}
 
   async getAll(): Promise<Product[]> {
     return this.productRepo.getAll();
   }
 
-  async save(product: SaveProductDto): Promise<void> {
-    const productData = await this.productRepo.save(product);
-
-    // if (category_id) {
-    //   const categoryData = await this.categoryRepository.getPostById(
-    //     category_id,
-    //   );
-
-    //   const productToCategory =
-    //     await this.productToCategoryRepository.createRecord({
-    //       category_id,
-    //       product_id: productData.id,
-    //       product: productData,
-    //       category: categoryData,
-    //     });
-    //   productData.productToCategory.push(productToCategory);
-    // }
-
+  async save(payload: SaveProductDto): Promise<Product> {
+    const productData = await this.productRepo.save(payload);
     return productData;
   }
 
-  async remove(product_id: string): Promise<string> {
-    await this.productRepo.remove(product_id);
-    // await this.productToCategoryRepository.removeAllRecordsByProductId(
-    //   product_id,
-    // );
+  async remove(productId: Types.ObjectId): Promise<Types.ObjectId> {
+    await this.productRepo.remove(productId);
+    await this.productToCategoryRepository.remove({ productId });
 
-    return product_id;
+    return productId;
   }
 
-  async getOne(id: string): Promise<Product> {
-    return this.productRepo.getOne(id);
+  async getOne(title: string): Promise<Product> {
+    console.log('title', title);
+
+    return this.productRepo.getOneByTitle(title);
   }
 }

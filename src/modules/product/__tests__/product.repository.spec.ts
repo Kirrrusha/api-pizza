@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 import { Product, ProductSchema } from '../schemas/products.schema';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -48,7 +50,7 @@ describe('Test products repository', () => {
   afterEach(async () => {
     const refreshDatabase = () =>
       repo['productDBProvider'].deleteMany({}).exec();
-    await refreshDatabase();
+    // await refreshDatabase();
   });
 
   it('should be defined', () => {
@@ -61,7 +63,12 @@ describe('Test products repository', () => {
   it('should return record when search By id or null if not exists', async () => {
     expect.assertions(2);
     const { title, description, price, image } = product;
-    await repo.save({ title, description, price, image });
+    await repo.save({
+      title,
+      description,
+      price,
+      image,
+    });
     const result = await repo.getOneByTitle('123');
     expect(result).toBeFalsy();
 
