@@ -12,9 +12,9 @@ export class Category {
 export const CategorySchema = SchemaFactory.createForClass(Category);
 
 CategorySchema.virtual('products', {
-  ref: 'Product',
+  ref: 'ProductToCategory',
   localField: '_id',
-  foreignField: '_id',
+  foreignField: 'categoryId',
 });
 
 CategorySchema.set('toObject', { virtuals: true });

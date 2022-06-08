@@ -1,8 +1,16 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProductToOptionRepository } from './product-to-option.repository';
+import { MongooseModule } from '@nestjs/mongoose';
+
+import {
+  ProductToOption,
+  ProductToOptionSchema,
+} from './schemas/product-to-option.schema';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([ProductToOptionRepository])]
+  imports: [
+    MongooseModule.forFeature([
+      { name: ProductToOption.name, schema: ProductToOptionSchema },
+    ]),
+  ],
 })
 export class ProductOptionModule {}

@@ -33,8 +33,6 @@ export class ProductService {
   }
 
   async getOne(title: string): Promise<Product> {
-    console.log('title', title);
-
     return this.productRepo.getOneByTitle(title);
   }
 }

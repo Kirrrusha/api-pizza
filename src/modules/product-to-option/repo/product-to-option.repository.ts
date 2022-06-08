@@ -1,33 +1,35 @@
+import { lineDelimiter } from './../../../helpers/index';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-
-import { SaveProductCategoryDto } from '../dto/save-product-category.dto';
-import { ProductToCategory } from '../schemas/product-to-category.schema';
-import { lineDelimiter } from './../../../helpers/index';
+import { NotFoundException } from '@nestjs/common';
+import { SaveProductToOptionDto } from '../dto/save-product-option.dto';
+import { UpdateProductOptionDto } from '../dto/update-product-option.dto';
+import { ProductToOption } from '../schemas/product-to-option.schema';
 
 @Injectable()
-export class ProductToCategoryRepository {
+export class ProductToOptionRepository {
   constructor(
-    @InjectModel(ProductToCategory.name)
-    private readonly productToCategoryDBProvider: Model<ProductToCategory>,
+    @InjectModel(ProductToOption.name)
+    private readonly productToOptionDBProvider: Model<ProductToOption>,
   ) {}
 
-  private readonly logger = new Logger(ProductToCategory.name);
+  private readonly logger = new Logger(ProductToOption.name);
 
   async save(
-    saveProductCategoryDto: SaveProductCategoryDto,
-  ): Promise<ProductToCategory> {
-    const { productId, categoryId } = saveProductCategoryDto;
-    const prefix = `[Product ID: ${productId}][Category ID: ${categoryId}]`;
+    saveProductToOptionDto: SaveProductToOptionDto,
+  ): Promise<ProductToOption> {
+    const { optionId, productId } = saveProductToOptionDto;
+
+    const prefix = `[Product ID: ${productId}][OPTION ID: ${optionId}]`;
 
     try {
       this.logger.log(`${prefix} SAVING START`);
 
-      const result = await this.productToCategoryDBProvider
+      const result = await this.productToOptionDBProvider
         .findOneAndUpdate(
-          { productId, categoryId },
-          { productId, categoryId },
+          { productId, optionId },
+          { productId, optionId },
           { new: true, upsert: true },
         )
         .lean()
@@ -38,19 +40,20 @@ export class ProductToCategoryRepository {
 
       return result;
     } catch (e) {
-      this.logger.error(`${prefix} Save error: ${e.message}`);
+      this.logger.error(`${prefix} SAVING ERROR: ${e.message}`);
       lineDelimiter();
     }
   }
 
   async getAllById(
     id: Types.ObjectId,
-    type: 'categoryId' | 'productId',
-  ): Promise<ProductToCategory[]> {
+    type: 'optionId' | 'productId',
+  ): Promise<ProductToOption[]> {
     const prefix = `[${type}: ${id}]`;
+
     try {
       this.logger.log(`${prefix} GET ALL BY ID START`);
-      const result = await this.productToCategoryDBProvider
+      const result = await this.productToOptionDBProvider
         .find({ [type]: id })
         .lean()
         .exec();
@@ -65,24 +68,24 @@ export class ProductToCategoryRepository {
     }
   }
 
-  async saveMany(payload: ProductToCategory[]): Promise<ProductToCategory[]> {
+  async saveMany(payload: ProductToOption[]): Promise<ProductToOption[]> {
     const prefix = payload.reduce(
       (acc, item) =>
-        `${acc} [Product IDs: ${item.productId}][Category ID: ${item.categoryId}]`,
+        `${acc} [Product IDs: ${item.productId}][OPTION ID: ${item.optionId}]`,
       '',
     );
 
     try {
       this.logger.log(`${prefix} SAVING MANY START`);
 
-      const result = await this.productToCategoryDBProvider.insertMany(payload);
+      const result = await this.productToOptionDBProvider.insertMany(payload);
 
-      this.logger.log(`${prefix} SAVING SUCCESS`);
+      this.logger.log(`${prefix} SAVING MANY SUCCESS`);
       lineDelimiter();
 
       return result;
     } catch (e) {
-      this.logger.error(`${prefix} Save error: ${e.message}`);
+      this.logger.error(`${prefix} SAVING MANY ERROR: ${e.message}`);
       lineDelimiter();
     }
   }
@@ -92,7 +95,7 @@ export class ProductToCategoryRepository {
 
     try {
       this.logger.log(`${prefix} REMOVE BY ID START`);
-      await this.productToCategoryDBProvider.findByIdAndDelete(id);
+      await this.productToOptionDBProvider.findByIdAndDelete(id);
       this.logger.log(`${prefix} REMOVE BY ID SUCCESS`);
       lineDelimiter();
     } catch (e) {
@@ -101,17 +104,17 @@ export class ProductToCategoryRepository {
     }
   }
 
-  async remove(saveProductCategoryDto: SaveProductCategoryDto): Promise<void> {
-    const { productId, categoryId } = saveProductCategoryDto;
+  async remove(saveProductToOptionDto: SaveProductToOptionDto): Promise<void> {
+    const { productId, optionId } = saveProductToOptionDto;
     const prefix = `${productId ? `[PRODUCT ID: ${productId}]` : ''} ${
-      categoryId ? `[CATEGORY ID: ${categoryId}]` : ''
+      optionId ? `[CATEGORY ID: ${optionId}]` : ''
     }`;
 
     try {
       this.logger.log(`${prefix} REMOVE START`);
-      await this.productToCategoryDBProvider.remove({
+      await this.productToOptionDBProvider.remove({
         productId,
-        categoryId,
+        optionId,
       });
       this.logger.log(`${prefix} REMOVE SUCCESS`);
       lineDelimiter();
