@@ -2,50 +2,49 @@ import { Model, Types } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 
-import { SaveProductDto } from '../dto/save-product.dto'
-import { Product } from '../schemas/products.schema'
-import { lineDelimiter } from '../../../helpers/index'
+import { SaveCategoryDto } from '../dto/save-category.dto'
+import { Category } from './../schemas/category.schema'
+import { lineDelimiter } from './../../../helpers/index'
 
 @Injectable()
-export class ProductRepository {
+export class CategoryRepository {
   constructor(
-    @InjectModel(Product.name)
-    private readonly productDBProvider: Model<Product>
+    @InjectModel(Category.name)
+    private readonly categoryDBProvider: Model<Category>
   ) {}
 
-  private readonly logger = new Logger(Product.name)
+  private readonly logger = new Logger(Category.name)
 
-  async getAll(): Promise<Product[]> {
+  async getAll(): Promise<Category[]> {
     try {
       this.logger.log('GET_ALL PENDEING')
-      const products = await this.productDBProvider.find().populate('categories').exec()
+
+      const result = this.categoryDBProvider.find().populate('products').lean().exec()
+
       this.logger.log('GET_ALL SUCCESS')
       lineDelimiter()
 
-      return products
-    } catch (error) {
-      this.logger.error(`GET_ALL ERROR: ${error.message}`)
+      return result
+    } catch (err) {
+      this.logger.error(`GET_ALL ERROR: ${err.message}`)
       lineDelimiter()
     }
   }
 
-  async save(saveProductDto: SaveProductDto): Promise<Product> {
-    const { title, description, price, image, id } = saveProductDto
-    const prefix = `[Product name: ${title}][Mongo ID: ${id}]`
+  async save(saveCategoryDto: SaveCategoryDto): Promise<Category> {
+    const { title } = saveCategoryDto
+    const prefix = `[Category name: ${title}]`
 
     Logger.log(`${prefix} SAVING`)
 
     try {
-      const result = await this.productDBProvider
+      const result = await this.categoryDBProvider
         .findOneAndUpdate(
           {
-            $or: [{ title }, { _id: id }]
+            $or: [{ title }]
           },
           {
-            title,
-            description,
-            price,
-            image
+            title
           },
           {
             upsert: true
@@ -69,7 +68,7 @@ export class ProductRepository {
 
     try {
       this.logger.log(`${prefix} REMOVE START`)
-      await this.productDBProvider.findByIdAndDelete(id)
+      await this.categoryDBProvider.findByIdAndDelete(id)
       this.logger.log(`${prefix} REMOVE SUCCESS`)
       lineDelimiter()
     } catch (error) {
@@ -78,13 +77,13 @@ export class ProductRepository {
     }
   }
 
-  async getOneByTitle(title: string): Promise<Product> {
+  async getOneByTitle(title: string): Promise<Category> {
     const prefix = `[TITLE RECORD: ${title}]`
 
     try {
       this.logger.log(`${prefix} GET_ONE_BY_TITLE START`)
 
-      const found = await this.productDBProvider.findOne({ title }).populate('categories').exec()
+      const found = await this.categoryDBProvider.findOne({ title }).populate('categories').exec()
 
       this.logger.log(`${prefix} GET_ONE_BY_TITLE SUCCESS`)
       lineDelimiter()

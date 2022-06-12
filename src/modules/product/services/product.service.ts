@@ -1,38 +1,59 @@
-import { Injectable } from '@nestjs/common';
-import { Types } from 'mongoose';
+import { Injectable } from '@nestjs/common'
+import { Types } from 'mongoose'
 
-import { ProductRepository } from '../repo/product.repository';
-import { ProductToCategoryRepository } from '../../product-to-category/repo/product-to-category.repository';
-import { UpdateProductDto } from '../dto/update-product.dto';
-import { CreateProductCategoryDto } from '../dto/create-product-category.dto';
-import { CategoryRepository } from '../../category/category.repository';
-import { SaveProductDto } from '../dto/save-product.dto';
-import { Product } from '../schemas/products.schema';
+import { ProductRepository } from '../repo/product.repository'
+import { ProductToCategoryRepository } from '../../product-to-category/repo/product-to-category.repository'
+import { ProductToOptionRepository } from '../../product-to-option/repo/product-to-option.repository'
+import { UpdateProductDto } from '../dto/update-product.dto'
+import { CreateProductCategoryDto } from '../dto/create-product-category.dto'
+import { CategoryRepository } from '../../category/repo/category.repository'
+import { SaveProductDto } from '../dto/save-product.dto'
+import { Product } from '../schemas/products.schema'
 
 @Injectable()
 export class ProductService {
   constructor(
     private productRepo: ProductRepository,
     private productToCategoryRepository: ProductToCategoryRepository,
+    private productToOptionRepository: ProductToOptionRepository
   ) {}
 
   async getAll(): Promise<Product[]> {
-    return this.productRepo.getAll();
+    return this.productRepo.getAll()
   }
 
   async save(payload: SaveProductDto): Promise<Product> {
-    const productData = await this.productRepo.save(payload);
-    return productData;
+    const productData = await this.productRepo.save(payload)
+
+    if (payload.categoryIds?.length) {
+      await this.productToCategoryRepository.saveMany(
+        payload.categoryIds?.map((categoryId) => ({
+          categoryId,
+          productId: productData['_id']
+        }))
+      )
+    }
+
+    if (payload.optionsIds?.length) {
+      await this.productToOptionRepository.saveMany(
+        payload.optionsIds?.map((optionId) => ({
+          optionId,
+          productId: productData['_id']
+        }))
+      )
+    }
+
+    return productData
   }
 
   async remove(productId: Types.ObjectId): Promise<Types.ObjectId> {
-    await this.productRepo.remove(productId);
-    await this.productToCategoryRepository.remove({ productId });
+    await this.productRepo.remove(productId)
+    await this.productToCategoryRepository.remove({ productId })
 
-    return productId;
+    return productId
   }
 
   async getOne(title: string): Promise<Product> {
-    return this.productRepo.getOneByTitle(title);
+    return this.productRepo.getOneByTitle(title)
   }
 }

@@ -1,15 +1,14 @@
-import { Product, ProductSchema } from '../schemas/products.schema'
 import { INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { MongooseModule } from '@nestjs/mongoose'
 
-import { ProductRepository } from '../repo/product.repository'
-import product from '../mocks/product'
 import { ProductToCategory, ProductToCategorySchema } from '../../product-to-category/schemas/product-to-category.schema'
+import { CategoryRepository } from '../repo/category.repository'
+import { Category, CategorySchema } from '../schemas/category.schema'
 
-describe('Test products repository', () => {
+describe('Test category repository', () => {
   let app: INestApplication
-  let repo: ProductRepository
+  let repo: CategoryRepository
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,15 +21,15 @@ describe('Test products repository', () => {
           autoCreate: true
         }),
         MongooseModule.forFeature([
-          { name: Product.name, schema: ProductSchema },
+          { name: Category.name, schema: CategorySchema },
           { name: ProductToCategory.name, schema: ProductToCategorySchema }
         ])
       ],
-      providers: [ProductRepository]
+      providers: [CategoryRepository]
     }).compile()
 
     app = module.createNestApplication()
-    repo = module.get<ProductRepository>(ProductRepository)
+    repo = module.get<CategoryRepository>(CategoryRepository)
 
     await app.init()
   })
@@ -40,8 +39,8 @@ describe('Test products repository', () => {
   })
 
   afterEach(async () => {
-    const refreshDatabase = () => repo['productDBProvider'].deleteMany({}).exec()
-    // await refreshDatabase();
+    const refreshDatabase = () => repo['categoryDBProvider'].deleteMany({}).exec()
+    await refreshDatabase()
   })
 
   it('should be defined', () => {
@@ -53,24 +52,17 @@ describe('Test products repository', () => {
 
   it('should return record when search By id or null if not exists', async () => {
     expect.assertions(2)
-    const { title, description, price, image } = product
     await repo.save({
-      title,
-      description,
-      price,
-      image
+      title: 'title'
     })
     const result = await repo.getOneByTitle('123')
     expect(result).toBeFalsy()
 
-    const secondResult = await repo.getOneByTitle(title)
+    const secondResult = await repo.getOneByTitle('title')
 
     expect(secondResult).toEqual(
       expect.objectContaining({
-        title,
-        description,
-        price,
-        image
+        title: 'title'
       })
     )
   })
@@ -79,22 +71,13 @@ describe('Test products repository', () => {
     expect.assertions(4)
     const mock = [
       {
-        title: 'title1',
-        description: 'description1',
-        price: 100,
-        image: 'image1'
+        title: 'title1'
       },
       {
-        title: 'title2',
-        description: 'description2',
-        price: 200,
-        image: 'image2'
+        title: 'title2'
       },
       {
-        title: 'title3',
-        description: 'description3',
-        price: 300,
-        image: 'image3'
+        title: 'title3'
       }
     ]
     await repo.save(mock[0])
@@ -110,8 +93,7 @@ describe('Test products repository', () => {
   it('should remove record', async () => {
     expect.assertions(2)
 
-    const { title, description, price, image } = product
-    await repo.save({ title, description, price, image })
+    await repo.save({ title: 'title' })
     let result = await repo.getAll()
     expect(result.length).toEqual(1)
 
