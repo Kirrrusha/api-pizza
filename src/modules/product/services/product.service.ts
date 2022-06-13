@@ -4,9 +4,6 @@ import { Types } from 'mongoose'
 import { ProductRepository } from '../repo/product.repository'
 import { ProductToCategoryRepository } from '../../product-to-category/repo/product-to-category.repository'
 import { ProductToOptionRepository } from '../../product-to-option/repo/product-to-option.repository'
-import { UpdateProductDto } from '../dto/update-product.dto'
-import { CreateProductCategoryDto } from '../dto/create-product-category.dto'
-import { CategoryRepository } from '../../category/repo/category.repository'
 import { SaveProductDto } from '../dto/save-product.dto'
 import { Product } from '../schemas/products.schema'
 
@@ -34,9 +31,9 @@ export class ProductService {
       )
     }
 
-    if (payload.optionsIds?.length) {
+    if (payload.optionIds?.length) {
       await this.productToOptionRepository.saveMany(
-        payload.optionsIds?.map((optionId) => ({
+        payload.optionIds?.map((optionId) => ({
           optionId,
           productId: productData['_id']
         }))
