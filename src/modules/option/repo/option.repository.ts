@@ -1,50 +1,50 @@
+import { lineDelimiter } from './../../../helpers/index'
 import { Model, Types } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 
-import { SaveCategoryDto } from '../dto/save-category.dto'
-import { Category } from './../schemas/category.schema'
-import { lineDelimiter } from './../../../helpers/index'
+import { Option } from '../schemas/option.schema'
+import { SaveOptionDto } from '../dto/save-option.dto'
 
 @Injectable()
-export class CategoryRepository {
+export class OptionRepository {
   constructor(
-    @InjectModel(Category.name)
-    private readonly categoryDBProvider: Model<Category>,
+    @InjectModel(Option.name)
+    private readonly optionDBProvider: Model<Option>,
   ) {}
 
-  private readonly logger = new Logger(Category.name)
+  private readonly logger = new Logger(Option.name)
 
-  async getAll(): Promise<Category[]> {
+  async getAll(): Promise<Option[]> {
     try {
       this.logger.log('GET_ALL PENDING')
 
-      const result = this.categoryDBProvider.find().populate('products').lean().exec()
+      const result = this.optionDBProvider.find().lean().exec()
 
       this.logger.log('GET_ALL SUCCESS')
       lineDelimiter()
 
       return result
-    } catch (err) {
-      this.logger.error(`GET_ALL ERROR: ${err.message}`)
+    } catch (error) {
+      this.logger.error(`GET_ALL ERROR: ${error.message}`)
       lineDelimiter()
     }
   }
 
-  async save(saveCategoryDto: SaveCategoryDto): Promise<Category> {
-    const { title } = saveCategoryDto
-    const prefix = `[Category name: ${title}]`
+  async save(saveOptionDto: SaveOptionDto): Promise<Option> {
+    const { title, image } = saveOptionDto
+    const prefix = `[Option name: ${title}]`
 
     Logger.log(`${prefix} SAVING`)
-
     try {
-      const result = await this.categoryDBProvider
+      const result = this.optionDBProvider
         .findOneAndUpdate(
           {
             $or: [{ title }],
           },
           {
             title,
+            image,
           },
           {
             upsert: true,
@@ -57,8 +57,8 @@ export class CategoryRepository {
       lineDelimiter()
 
       return result
-    } catch (e) {
-      Logger.error(`${prefix} SAVE ERROR: ${e.message}`)
+    } catch (error) {
+      Logger.error(`${prefix} SAVE ERROR: ${error.message}`)
       lineDelimiter()
     }
   }
@@ -68,7 +68,7 @@ export class CategoryRepository {
 
     try {
       this.logger.log(`${prefix} REMOVE START`)
-      await this.categoryDBProvider.findByIdAndDelete(id)
+      await this.optionDBProvider.findByIdAndDelete(id).lean().exec()
       this.logger.log(`${prefix} REMOVE SUCCESS`)
       lineDelimiter()
     } catch (error) {
@@ -77,13 +77,13 @@ export class CategoryRepository {
     }
   }
 
-  async getOneByTitle(title: string): Promise<Category> {
+  async getOneByTitle(title: string): Promise<Option> {
     const prefix = `[TITLE RECORD: ${title}]`
 
     try {
       this.logger.log(`${prefix} GET_ONE_BY_TITLE START`)
 
-      const found = await this.categoryDBProvider.findOne({ title }).populate('categories').exec()
+      const found = await this.optionDBProvider.findOne({ title }).exec()
 
       this.logger.log(`${prefix} GET_ONE_BY_TITLE SUCCESS`)
       lineDelimiter()
