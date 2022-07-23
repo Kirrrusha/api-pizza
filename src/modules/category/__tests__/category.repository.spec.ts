@@ -17,15 +17,15 @@ describe('Test category repository', () => {
           useNewUrlParser: true,
           user: 'root',
           pass: 'root',
-          autoIndex: true,
-          autoCreate: true
+          autoIndex: true, // remove
+          autoCreate: true, // remove
         }),
         MongooseModule.forFeature([
           { name: Category.name, schema: CategorySchema },
-          { name: ProductToCategory.name, schema: ProductToCategorySchema }
-        ])
+          { name: ProductToCategory.name, schema: ProductToCategorySchema },
+        ]),
       ],
-      providers: [CategoryRepository]
+      providers: [CategoryRepository],
     }).compile()
 
     app = module.createNestApplication()
@@ -53,7 +53,7 @@ describe('Test category repository', () => {
   it('should return record when search By id or null if not exists', async () => {
     expect.assertions(2)
     await repo.save({
-      title: 'title'
+      title: 'title',
     })
     const result = await repo.getOneByTitle('123')
     expect(result).toBeFalsy()
@@ -62,8 +62,8 @@ describe('Test category repository', () => {
 
     expect(secondResult).toEqual(
       expect.objectContaining({
-        title: 'title'
-      })
+        title: 'title',
+      }),
     )
   })
 
@@ -71,14 +71,14 @@ describe('Test category repository', () => {
     expect.assertions(4)
     const mock = [
       {
-        title: 'title1'
+        title: 'title1',
       },
       {
-        title: 'title2'
+        title: 'title2',
       },
       {
-        title: 'title3'
-      }
+        title: 'title3',
+      },
     ]
     await repo.save(mock[0])
     await repo.save(mock[1])

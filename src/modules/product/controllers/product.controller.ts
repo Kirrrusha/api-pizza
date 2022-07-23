@@ -1,40 +1,32 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
-import { ProductService } from '../services/product.service';
-import { CreateProductCategoryDto } from '../dto/create-product-category.dto';
-import { Product } from '../schemas/products.schema';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UsePipes, ValidationPipe } from '@nestjs/common'
+import { ProductService } from '../services/product.service'
+import { Product } from '../schemas/products.schema'
+import { Types } from 'mongoose'
+import { SaveProductDto } from '../dto/save-product.dto'
 
-@Controller('product')
+@Controller('products')
 export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Get()
   getAll(): Promise<Product[]> {
-    return this.productService.getAll();
+    return this.productService.getAll()
   }
 
   @Post()
   @UsePipes(ValidationPipe)
-  save(@Body() createProductDTO: CreateProductCategoryDto): Promise<void> {
-    return this.productService.save(createProductDTO);
+  save(@Body() saveProductDTO: SaveProductDto): Promise<Product> {
+    return this.productService.save(saveProductDTO)
   }
 
+  // TODO add pipe mongo id
   @Delete('/:id')
-  remove(@Param('id', ParseIntPipe) id: string): Promise<string> {
-    return this.productService.remove(id);
+  remove(@Param('id') id: Types.ObjectId): Promise<Types.ObjectId> {
+    return this.productService.remove(id)
   }
 
   @Get('/:id')
   getOne(@Param('id', ParseIntPipe) id: string): Promise<Product> {
-    return this.productService.getOne(id);
+    return this.productService.getOne(id)
   }
 }
