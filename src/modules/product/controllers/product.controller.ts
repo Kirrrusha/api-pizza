@@ -3,7 +3,9 @@ import { ProductService } from '../services/product.service'
 import { Product } from '../schemas/products.schema'
 import { Types } from 'mongoose'
 import { SaveProductDto } from '../dto/save-product.dto'
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('products')
 @Controller('products')
 export class ProductController {
   constructor(private productService: ProductService) {}
