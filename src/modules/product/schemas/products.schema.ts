@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 
-export type ProductDocument = mongoose.Document<Product>;
+export type ProductDocument = mongoose.Document<Product>
 
 @Schema({
   collection: 'Product',
@@ -12,25 +12,25 @@ export type ProductDocument = mongoose.Document<Product>;
 })
 export class Product {
   @Prop({ required: true })
-  title: string;
+  title: string
 
   @Prop()
-  image: string;
+  image: string
 
   @Prop()
-  price: number;
+  price: number
 
   @Prop()
-  description: string;
+  description: string
 }
 
-export const ProductSchema = SchemaFactory.createForClass(Product);
+export const ProductSchema = SchemaFactory.createForClass(Product)
 
 ProductSchema.virtual('categories', {
   ref: 'ProductToCategory',
   localField: '_id',
   foreignField: 'categoryId',
-});
+})
 
-ProductSchema.set('toObject', { virtuals: true });
-ProductSchema.set('toJSON', { virtuals: true });
+ProductSchema.set('toObject', { virtuals: true })
+ProductSchema.set('toJSON', { virtuals: true })

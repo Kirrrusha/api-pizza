@@ -10,7 +10,7 @@ import { lineDelimiter } from '../../../helpers/index'
 export class ProductRepository {
   constructor(
     @InjectModel(Product.name)
-    private readonly productDBProvider: Model<Product>
+    private readonly productDBProvider: Model<Product>,
   ) {}
 
   private readonly logger = new Logger(Product.name)
@@ -39,17 +39,17 @@ export class ProductRepository {
       const result = await this.productDBProvider
         .findOneAndUpdate(
           {
-            $or: [{ title }, { _id: id }]
+            $or: [{ title }, { _id: id }],
           },
           {
             title,
             description,
             price,
-            image
+            image,
           },
           {
-            upsert: true
-          }
+            upsert: true,
+          },
         )
         .lean()
         .exec()
