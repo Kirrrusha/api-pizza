@@ -32,6 +32,7 @@
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "dayjs": "^1.11.6",
     "mo": "^1.7.3",
     "mongoose": "^5.11.15",
     "passport": "^0.6.0",

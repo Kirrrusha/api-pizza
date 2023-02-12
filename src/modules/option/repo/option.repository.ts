@@ -1,4 +1,4 @@
-import { lineDelimiter } from './../../../helpers/index'
+import { lineDelimiter } from './../../../helpers'
 import { Model, Types } from 'mongoose'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
